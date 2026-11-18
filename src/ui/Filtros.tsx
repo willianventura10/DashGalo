@@ -66,11 +66,9 @@ export function BarraFiltros(props: { f: Filtros; set: (f: Filtros) => void; ano
           <input type="checkbox" checked={f.atleticoB} onChange={(e) => set({ ...f, atleticoB: e.target.checked })} />
           Incluir Atlético-B
         </label>
-        {mudou && (
-          <button className="botao-texto peq" onClick={() => set(padrao)}>
-            Limpar filtros
-          </button>
-        )}
+        <button className="botao peq" onClick={() => set(padrao)} disabled={!mudou} title={mudou ? 'Volta ao padrão: todos os anos, jogos oficiais' : 'Os filtros já estão no padrão'}>
+          Limpar filtros
+        </button>
         <span className="mudo peq" aria-live="polite">{props.total.toLocaleString('pt-BR')} jogos</span>
       </div>
     </div>

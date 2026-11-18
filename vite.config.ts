@@ -13,7 +13,7 @@ export default defineConfig({
       manifest: {
         name: 'DashGalo: estatísticas do Atlético Mineiro',
         short_name: 'DashGalo',
-        description: 'Retrospecto do Atlético Mineiro desde 1909, a partir das fichas do blog O Canto do Galo.',
+        description: 'Retrospecto do Clube Atlético Mineiro desde 1909, a partir das fichas do blog O Canto do Galo.',
         lang: 'pt-BR',
         theme_color: '#0a0a0a',
         background_color: '#0a0a0a',

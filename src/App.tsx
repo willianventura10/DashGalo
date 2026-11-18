@@ -113,7 +113,7 @@ function Moldura({ children, aba, rodape }: { children: React.ReactNode; aba?: s
             <h1>
               <a href="#/" style={{ textDecoration: 'none' }}>DashGalo</a>
             </h1>
-            <p>Todas as partidas do Atlético Mineiro desde 1909, a partir das fichas do blog O Canto do Galo.</p>
+            <p>Todas as partidas do Clube Atlético Mineiro desde 1909, a partir das fichas do blog O Canto do Galo.</p>
           </div>
         </div>
       </header>
