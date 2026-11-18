@@ -6,6 +6,7 @@ import type { Partida } from '../tipos';
 import { Busca, Cartao, confronto, linkJogo, ListaJogos, Tabela, type Coluna } from '../ui/comum';
 import { nomeCompeticao } from '../ui/Filtros';
 import { GraficoColunas, GraficoRanking } from '../ui/graficos';
+import { linkJogador } from './Jogadores';
 
 const colJogo: Coluna<Partida> = { titulo: 'Jogo', valor: (p) => confronto(p), exibir: (p) => <a href={linkJogo(p.id)}>{confronto(p)}</a> };
 const colData: Coluna<Partida> = { titulo: 'Data', valor: (p) => p.data, exibir: (p) => fData(p.data) };
@@ -114,7 +115,7 @@ export function Artilheiros({ ps }: { ps: Partida[] }) {
           chave={(a) => a.chave}
           ordem={1}
           colunas={[
-            { titulo: 'Jogador', valor: (a) => a.nome },
+            { titulo: 'Jogador', valor: (a) => a.nome, exibir: (a) => <a href={linkJogador(a.nome)}>{a.nome}</a> },
             { titulo: 'Gols', valor: (a) => a.gols, numerica: true },
             { titulo: 'Pênaltis', valor: (a) => a.penaltis, numerica: true },
             { titulo: 'Faltas', valor: (a) => a.faltas, numerica: true },

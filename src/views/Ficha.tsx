@@ -1,7 +1,9 @@
 import { useEffect, useState } from 'react';
 import { fData, fDiaSemana, fInt } from '../formato';
 import type { ArquivoFichas, Escalacao, Ficha as TFicha, Gol, Partida } from '../tipos';
+import { normalizar } from '../parser/ficha';
 import { linkGrupo, placar, Res } from '../ui/comum';
+import { linkJogador, useJogadores } from './Jogadores';
 import { nomeCompeticao } from '../ui/Filtros';
 
 let cache: Promise<ArquivoFichas> | null = null;
@@ -11,7 +13,12 @@ const carregarFichas = () =>
     return r.json();
   }));
 
-export function Ficha({ partida }: { partida: Partida | undefined }) {
+export function Ficha({ partida, indice }: { partida: Partida | undefined; indice: number }) {
+  const jogadores = useJogadores();
+  // nome normalizado -> chave do jogador que atuou nesta partida
+  const links = new Map<string, string>();
+  if (Array.isArray(jogadores))
+    for (const j of jogadores) if (j.titular.includes(indice) || j.entrou.includes(indice)) links.set(normalizar(j.nome), j.chave);
   const [ficha, setFicha] = useState<TFicha | null | 'erro'>(null);
   useEffect(() => {
     if (!partida) return;
@@ -90,7 +97,7 @@ export function Ficha({ partida }: { partida: Partida | undefined }) {
       {ficha === 'erro' && <p className="aviso">Não foi possível carregar as escalações. Verifique a conexão e abra o jogo de novo.</p>}
       {f && (f.atletico || f.adversario) && (
         <div className="grade-2">
-          <Time titulo="Atlético" e={f.atletico} tecnico={p.tecnico} />
+          <Time titulo="Atlético" e={f.atletico} tecnico={p.tecnico} links={links} />
           <Time titulo={p.adversario} e={f.adversario} tecnico={p.tecnicoAdv} />
         </div>
       )}
@@ -130,7 +137,11 @@ function ListaGols({ titulo, gols }: { titulo: string; gols: Gol[] }) {
   );
 }
 
-function Time({ titulo, e, tecnico }: { titulo: string; e: Escalacao | null; tecnico: string | null }) {
+function Time({ titulo, e, tecnico, links }: { titulo: string; e: Escalacao | null; tecnico: string | null; links?: Map<string, string> }) {
+  const nome = (n: string) => {
+    const c = links?.get(normalizar(n));
+    return c ? <a href={linkJogador(c)}>{n}</a> : n;
+  };
   return (
     <section className="cartao escalacao">
       <h3 style={{ marginBottom: 8 }}>{titulo}</h3>
@@ -138,7 +149,7 @@ function Time({ titulo, e, tecnico }: { titulo: string; e: Escalacao | null; tec
         <>
           <ul style={{ listStyle: "none", padding: 0, margin: 0 }}>
             {e.titulares.map((t, i) => (
-              <li key={i}>{t}</li>
+              <li key={i}>{nome(t)}</li>
             ))}
           </ul>
           {e.substituicoes.length > 0 && (
@@ -147,7 +158,7 @@ function Time({ titulo, e, tecnico }: { titulo: string; e: Escalacao | null; tec
               <ul style={{ margin: 0, paddingLeft: '1.1rem' }}>
                 {e.substituicoes.map((s, i) => (
                   <li key={i}>
-                    {s.entra} no lugar de {s.sai}
+                    {nome(s.entra)} no lugar de {s.sai}
                   </li>
                 ))}
               </ul>

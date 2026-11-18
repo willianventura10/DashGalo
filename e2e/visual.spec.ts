@@ -7,6 +7,8 @@ const ROTAS: [string, string][] = [
   ['competicoes', '#/competicoes'],
   ['estadios', '#/estadios'],
   ['publico', '#/publico'],
+  ['jogadores', '#/jogadores'],
+  ['jogador-reinaldo', '#/jogadores/reinaldo'],
   ['artilheiros', '#/artilheiros'],
   ['tecnicos', '#/tecnicos'],
   ['arbitros', '#/arbitros'],
@@ -66,4 +68,21 @@ test('gráfico tem versão em tabela', async ({ page }) => {
   await page.goto('#/');
   await page.getByRole('button', { name: 'Ver tabela' }).first().click();
   await expect(page.getByRole('table', { name: 'Retrospecto por período' })).toBeVisible();
+});
+
+test('busca de jogador leva à página dele', async ({ page }) => {
+  const erros = vigiarErros(page);
+  await page.goto('#/jogadores');
+  await page.getByRole('searchbox', { name: 'Buscar jogador' }).fill('joão leite');
+  await page.getByRole('link', { name: 'João Leite' }).first().click();
+  await expect(page.getByRole('heading', { name: 'João Leite' })).toBeVisible();
+  await expect(page.getByText('Como titular')).toBeVisible();
+  await expect(page.getByText('Casa × fora')).toBeVisible();
+  expect(erros).toEqual([]);
+});
+
+test('jogador inexistente mostra orientação', async ({ page }) => {
+  await page.goto('#/jogadores');
+  await page.getByRole('searchbox', { name: 'Buscar jogador' }).fill('xyzw');
+  await expect(page.getByText(/Nenhum jogador com/)).toBeVisible();
 });

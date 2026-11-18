@@ -1,5 +1,6 @@
 // Converte dados-brutos/posts.json em public/data/partidas.json e public/data/fichas.json.
 import { mkdir, readFile, writeFile } from 'node:fs/promises';
+import { indexarJogadores } from '../src/jogadores';
 import { parsePost, type PostBruto } from '../src/parser/ficha';
 import type { ArquivoFichas, ArquivoPartidas, Partida } from '../src/tipos';
 
@@ -38,5 +39,12 @@ const saida: ArquivoPartidas = {
 await mkdir('public/data', { recursive: true });
 await writeFile('public/data/partidas.json', JSON.stringify(saida));
 await writeFile('public/data/fichas.json', JSON.stringify(fichas));
+// Índice de jogadores: posições em `partidas` (mesma ordem do arquivo acima).
+const jogadores = indexarJogadores(
+  partidas.map((p) => fichas[p.id].atletico),
+  partidas.map((p) => p.ano),
+);
+await writeFile('public/data/jogadores.json', JSON.stringify(jogadores));
+console.log(`${jogadores.length} jogadores indexados`);
 console.log(`${partidas.length} partidas geradas; ${falhas.length} posts ignorados`);
 for (const f of falhas) console.log('  ignorado:', f);

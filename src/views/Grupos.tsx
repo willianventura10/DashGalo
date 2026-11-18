@@ -3,7 +3,7 @@ import { agrupar, goleadas, resumo, type Grupo } from '../calc';
 import { fData, fInt, fPct } from '../formato';
 import { normalizar } from '../parser/ficha';
 import type { Partida } from '../tipos';
-import { BarraVED, Busca, Cartao, colunasResumo, confronto, linkGrupo, linkJogo, ListaJogos, Numeros, Tabela, type Coluna } from '../ui/comum';
+import { BarraVED, Busca, CasaFora, Cartao, colunasResumo, confronto, linkGrupo, linkJogo, ListaJogos, Numeros, Tabela, type Coluna } from '../ui/comum';
 import { nomeCompeticao } from '../ui/Filtros';
 import { GraficoRanking } from '../ui/graficos';
 
@@ -187,6 +187,7 @@ export function DetalheGrupo({ tipo, chave, ps }: { tipo: string; chave: string;
           </dl>
         )}
       </section>
+      {tipo !== 'estadios' && <CasaFora ps={jogos} />}
       {tipo !== 'competicoes' && porComp.length > 1 && (
         <section className="cartao">
           <h3 style={{ marginBottom: 8 }}>Por competição</h3>

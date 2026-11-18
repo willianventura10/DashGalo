@@ -6,6 +6,7 @@ import { BarraFiltros, competicoesDe } from './ui/Filtros';
 import { Ficha } from './views/Ficha';
 import { Geral } from './views/Geral';
 import { DetalheGrupo, GRUPOS, ListaGrupos } from './views/Grupos';
+import { DetalheJogador, Jogadores } from './views/Jogadores';
 import { Artilheiros, Jogos, Publico, Recordes } from './views/Outras';
 
 const ABAS: [string, string][] = [
@@ -14,6 +15,7 @@ const ABAS: [string, string][] = [
   ['competicoes', 'Competições'],
   ['estadios', 'Estádios'],
   ['publico', 'Público e renda'],
+  ['jogadores', 'Jogadores'],
   ['artilheiros', 'Artilheiros'],
   ['tecnicos', 'Técnicos'],
   ['arbitros', 'Árbitros'],
@@ -78,7 +80,11 @@ function Painel({ dados }: { dados: ArquivoPartidas }) {
   const realizadas = ps.filter((p) => p.resultado).length;
 
   let conteudo;
-  if (aba === 'jogo') conteudo = <Ficha partida={todas.find((p: Partida) => p.id === arg)} />;
+  if (aba === 'jogo') {
+    const i = todas.findIndex((p: Partida) => p.id === arg);
+    conteudo = <Ficha partida={todas[i]} indice={i} />;
+  } else if (aba === 'jogadores' && arg) conteudo = <DetalheJogador key={arg} chave={arg} ps={ps} todas={todas} />;
+  else if (aba === 'jogadores') conteudo = <Jogadores ps={ps} todas={todas} />;
   else if (GRUPOS[aba] && arg) conteudo = <DetalheGrupo tipo={aba} chave={arg} ps={ps} />;
   else if (GRUPOS[aba]) conteudo = <ListaGrupos tipo={aba} ps={ps} />;
   else if (aba === 'publico') conteudo = <Publico ps={ps} />;

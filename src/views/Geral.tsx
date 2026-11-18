@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { porPeriodo, proximoJogo, realizadas, resumo } from '../calc';
 import { fData, fDiaSemana, fInt, fPct, hojeISO } from '../formato';
 import type { Partida } from '../tipos';
-import { BarraVED, Cartao, ListaJogos, Numeros, Tabela, linkJogo } from '../ui/comum';
+import { BarraVED, CasaFora, Cartao, ListaJogos, Numeros, Tabela, linkJogo } from '../ui/comum';
 import { GraficoAprov, GraficoVED } from '../ui/graficos';
 import { nomeCompeticao } from '../ui/Filtros';
 
@@ -54,11 +54,12 @@ export function Geral({ ps, todas }: { ps: Partida[]; todas: Partida[] }) {
           </p>
         </section>
       )}
-      <Numeros r={r} extra={[{ rotulo: 'Média de gols pró', valor: r.j ? (r.gp / r.j).toFixed(2).replace('.', ',') : '–' }]} />
+      <Numeros r={r} />
       <section className="cartao">
         <h3 style={{ marginBottom: 12 }}>Vitórias, empates e derrotas</h3>
         <BarraVED r={r} />
       </section>
+      <CasaFora ps={ps} />
       <div className="grade-2">
         <Cartao titulo={`Resultados ${rotuloPasso}`} sub="Quantidade de jogos" tabela={tabelaPeriodos} acoes={alternar}>
           <GraficoVED dados={periodos} passo={passoEfetivo} />

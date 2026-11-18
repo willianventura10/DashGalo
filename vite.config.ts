@@ -15,8 +15,8 @@ export default defineConfig({
         short_name: 'DashGalo',
         description: 'Retrospecto do Atlético Mineiro desde 1909, a partir das fichas do blog O Canto do Galo.',
         lang: 'pt-BR',
-        theme_color: '#111111',
-        background_color: '#111111',
+        theme_color: '#0a0a0a',
+        background_color: '#0a0a0a',
         display: 'standalone',
         icons: [
           { src: 'icon-192.png', sizes: '192x192', type: 'image/png' },

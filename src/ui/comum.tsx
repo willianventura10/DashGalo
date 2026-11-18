@@ -1,5 +1,5 @@
 import { useMemo, useState, type ReactNode } from 'react';
-import type { Resumo } from '../calc';
+import { resumo as resumoDe, type Resumo } from '../calc';
 import { fData, fInt, fPct, fSaldo } from '../formato';
 import type { Partida } from '../tipos';
 
@@ -58,7 +58,7 @@ const Numero = ({ rotulo, valor }: { rotulo: string; valor: string }) => (
 );
 
 /** Barra segmentada alta: parte de vitórias, empates e derrotas no total. */
-export function BarraVED({ r }: { r: Resumo }) {
+export function BarraVED({ r, semLegenda }: { r: Resumo; semLegenda?: boolean }) {
   if (!r.j) return null;
   const partes = [
     { k: 'v', nome: 'Vitórias', n: r.v, cor: 'var(--v)' },
@@ -70,20 +70,13 @@ export function BarraVED({ r }: { r: Resumo }) {
       <div className="segmentada" role="img" aria-label={partes.map((p) => `${p.nome}: ${p.n} (${fPct(p.n / r.j)})`).join('; ')}>
         {partes.map((p) =>
           p.n ? (
-            <div key={p.k} style={{ flexGrow: p.n, background: p.cor }} title={`${p.nome}: ${fInt(p.n)} (${fPct(p.n / r.j)})`}>
+            <div key={p.k} style={{ flexGrow: p.n, background: p.cor, color: p.k === 'd' ? '#0b0b0b' : '#fff' }} title={`${p.nome}: ${fInt(p.n)} (${fPct(p.n / r.j)})`}>
               {p.n / r.j >= 0.09 ? fPct(p.n / r.j) : ''}
             </div>
           ) : null,
         )}
       </div>
-      <div className="legenda">
-        {partes.map((p) => (
-          <span key={p.k}>
-            <i className="chave" style={{ background: p.cor }} />
-            {p.nome}
-          </span>
-        ))}
-      </div>
+      {!semLegenda && <LegendaVED />}
     </div>
   );
 }
@@ -106,7 +99,7 @@ export function Res({ r }: { r: Partida['resultado'] }) {
   );
 }
 
-export function ListaJogos({ jogos, limite = 50 }: { jogos: Partida[]; limite?: number }) {
+export function ListaJogos({ jogos, limite = 50, nota }: { jogos: Partida[]; limite?: number; nota?: (p: Partida) => string | null }) {
   const [n, setN] = useState(limite);
   if (!jogos.length) return <p className="vazio">Nenhum jogo com os filtros atuais.</p>;
   return (
@@ -127,7 +120,7 @@ export function ListaJogos({ jogos, limite = 50 }: { jogos: Partida[]; limite?: 
                 </>
               )}
             </a>
-            <span />
+            <span>{nota?.(p) && <span className="marcador">{nota(p)}</span>}</span>
             <span className="meta">
               {[p.competicaoNome ?? p.competicao, p.fase, p.estadio].filter(Boolean).join(', ')}
               {p.atleticoB ? ' (Atlético-B)' : ''}
@@ -225,5 +218,57 @@ export function colunasResumo<T extends Resumo>(): Coluna<T>[] {
 export function Busca({ valor, onChange, rotulo }: { valor: string; onChange: (s: string) => void; rotulo: string }) {
   return (
     <input className="busca" type="search" placeholder={rotulo} aria-label={rotulo} value={valor} onChange={(e) => onChange(e.target.value)} />
+  );
+}
+
+// ---------- casa × fora ----------
+/** Mandante = Atlético citado primeiro no título da ficha (convenção do blog; inclui jogos em campo neutro). */
+export function CasaFora({ ps }: { ps: Partida[] }) {
+  const lados: { k: Partida['mando']; nome: string }[] = [
+    { k: 'casa', nome: 'Atlético mandante' },
+    { k: 'fora', nome: 'Atlético visitante' },
+  ];
+  return (
+    <section className="cartao">
+      <div className="cartao-topo">
+        <div>
+          <h3>Casa × fora</h3>
+          <p className="sec peq">Mando conforme a ordem dos times no título da ficha</p>
+        </div>
+      </div>
+      <div className="casafora">
+        {lados.map((l) => {
+          const r = resumoDe(ps.filter((p) => p.mando === l.k));
+          return (
+            <div key={l.k}>
+              <p className="sec">{l.nome}</p>
+              <p className="aprov">{r.j ? fPct(r.aprov) : '–'}</p>
+              <p className="sec peq" style={{ marginBottom: 8 }}>
+                {fInt(r.j)} jogos: {fInt(r.v)} V, {fInt(r.e)} E, {fInt(r.d)} D. Gols {fInt(r.gp)} a {fInt(r.gc)}.
+              </p>
+              <BarraVED r={r} semLegenda />
+            </div>
+          );
+        })}
+      </div>
+      <LegendaVED />
+    </section>
+  );
+}
+
+export function LegendaVED() {
+  return (
+    <div className="legenda">
+      {[
+        ['Vitórias', 'var(--v)'],
+        ['Empates', 'var(--e)'],
+        ['Derrotas', 'var(--d)'],
+      ].map(([nome, cor]) => (
+        <span key={nome}>
+          <i className="chave" style={{ background: cor }} />
+          {nome}
+        </span>
+      ))}
+    </div>
   );
 }
