@@ -499,7 +499,8 @@ export function parsePost(post: PostBruto): { partida: Partida; ficha: Ficha } |
     ano: Number(tit.data.slice(0, 4)),
     mando: casa ? 'casa' : 'fora',
     advId: et.advRotulo ?? `${et.pais ?? eles.sigla ?? '?'} | ${eles.nome}`,
-    adversario: eles.nome,
+    // "Atlético PR" no título: exibe "Atlético-PR" para não confundir com o Galo.
+    adversario: ehAtletico(eles.nome) && !eles.nome.includes('-') && eles.sigla ? `${eles.nome}-${eles.sigla}` : eles.nome,
     advSigla: eles.sigla,
     advPais: pais,
     golsPro,
@@ -512,7 +513,8 @@ export function parsePost(post: PostBruto): { partida: Partida; ficha: Ficha } |
     competicao: et.competicao ?? competicaoDoTexto(cm?.[1]),
     competicaoNome: cm ? cm[1].trim() : null,
     fase: cm?.[2]?.trim() || null,
-    amistoso: AMISTOSOS.has(et.competicao ?? '') || /amistoso/i.test(comp ?? ''),
+    // A etiqueta manda; o texto só vale quando não há etiqueta de competição.
+    amistoso: et.competicao ? AMISTOSOS.has(et.competicao) : /amistoso/i.test(comp ?? ''),
     atleticoB: /-B/.test(nosso.nome),
     ...parsePublico(campos.publico),
     renda: parseRenda(campos.renda),

@@ -46,6 +46,14 @@ jobs:
       - name: Gerar JSON do dashboard
         run: npm run gerar
       - run: npm run build
+      - name: Testes visuais (Playwright)
+        run: |
+          npx playwright install --with-deps chromium
+          npm run e2e
+      - name: Screenshots para revisão
+        if: always()
+        uses: actions/upload-artifact@v4
+        with: { name: screenshots, path: screenshots, if-no-files-found: ignore }
       - uses: actions/upload-pages-artifact@v3
         if: github.ref == 'refs/heads/main'
         with: { path: dist }

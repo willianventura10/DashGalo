@@ -4,3 +4,4 @@ public/data
 test-results
 playwright-report
 *.local
+screenshots

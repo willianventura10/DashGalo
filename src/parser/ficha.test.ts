@@ -170,7 +170,7 @@ describe('fichas reais', () => {
 
   it('Atlético MG x Atlético PR: lado certo e gols contra', () => {
     const r = porTitulo('03/08/2014');
-    expect(r.partida).toMatchObject({ mando: 'casa', advId: 'PR Atlético', golsPro: 3, golsContra: 1 });
+    expect(r.partida).toMatchObject({ mando: 'casa', advId: 'PR Atlético', adversario: 'Atlético-PR', golsPro: 3, golsContra: 1 });
     expect(r.partida.gols.filter((g) => g.lado === 'A')).toHaveLength(3);
   });
 
